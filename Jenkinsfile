@@ -3,12 +3,16 @@ pipeline {
   tools {
     maven 'M2_HOME'
   }
+  environment {
+    registry = "lawrenceodedina/jenkinspipe"
+    registryCredential = 'TestingDockerID'
+  }
   stages {
     stage('Build'){
       steps {
         sh 'mvn clean'
         sh 'mvn install'
-        sh 'mvn package'
+        sh 'package'
       }
     }
     stage('test'){
@@ -19,14 +23,8 @@ pipeline {
     }
     stage('deploy'){
       steps {
-        echo "deploy step"
-        sleep 10
-      }
-    }
-    stage('docker'){
-      steps {
-        echo "image step"
-        sleep 10
+      script {
+        docker.build registry + ":$BUILD_NUMBER"
       }
     }
   }
